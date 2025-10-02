@@ -24,9 +24,9 @@ IDE Used: Visual Studio Code
     ReviewNode(string c, double r, ReviewNode* next): comment(c), rating(r), next(next) { }
  };
 
-void push_front(ReviewNode* head, double rating, string comment);
+void push_front(ReviewNode* &head, double rating, string comment);
 
-void push_back(ReviewNode* head, double rating, string comment);
+void push_back(ReviewNode* &head, double rating, string comment);
 
 void outputReviews(ReviewNode* head);
 
@@ -49,7 +49,6 @@ int main() {
     do {
         cout << "Enter review rating 0-5: " << endl;
         rating = validateRange(input, "double", 0.0, 5.0);
-        input->ignore(STREAM_IGNORE_CHARS, '\n');
         cout << "Enter review comments: " << endl;
         getline(*input, comment);
         cout << "Enter another review? Y/N: " << endl;
@@ -63,7 +62,7 @@ int main() {
     outputReviews(head);
 }
 
-void push_front(ReviewNode* head, double rating, string comment) {
+void push_front(ReviewNode* &head, double rating, string comment) {
     ReviewNode* newNode = new ReviewNode(comment, rating); //initialized w/ nullptr by default
     if (head) {
         newNode->next = head;
@@ -71,7 +70,7 @@ void push_front(ReviewNode* head, double rating, string comment) {
     head = newNode;
 }
 
-void push_back(ReviewNode* head, double rating, string comment) {
+void push_back(ReviewNode* &head, double rating, string comment) {
     ReviewNode* current = head;
     ReviewNode* newNode = new ReviewNode(comment, rating); //initialized w/ nullptr by default
     if (!head) { //head is the new node if empty
@@ -103,19 +102,23 @@ void outputReviews(ReviewNode* head) {
 template <typename T>
 T validateRange(istream* input, string datatype, T min, T max) {
     T val;
+    string inputString = "";
+    stringstream ss;
     bool failed = false;
     do {
+        if (ss.fail()) {
+            cout << "\tInput must be type " << datatype << endl;
+            ss.clear();
+            ss.str("");
+        }
         cout << "\t> ";
-        *input >> val;
-        cout << endl;
+        getline(*input, inputString);
+        ss.str(inputString);
+        ss >> val;
         if (val < min || val > max) {
             cout << "\tInput must be in range " << min << " - " << max << endl;
         }
-        if (input->fail()) {
-            cout << "\tInput must be type " << datatype << endl;
-            input->clear();
-            input->ignore(STREAM_IGNORE_CHARS, '\n');
-        }
-    } while (input->fail() || val < min || val > max);
+    } while (ss.fail() || val < min || val > max);
+    cout << val;
     return val;
 }
