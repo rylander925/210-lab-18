@@ -34,7 +34,7 @@ template <typename T>
 T validateRange(istream* input, string datatype, T min, T max);
 
 int main() {
-    const string FILENAME = "";//"data.txt";
+    const string FILENAME = "data.txt";
     ReviewNode* head = nullptr;
     istream* input;
     ifstream infile;
@@ -115,26 +115,23 @@ void outputReviews(ReviewNode* head) {
  */
 template <typename T>
 T validateRange(istream* input, string datatype, T min, T max) {
-    T val;
+    T val = min;
     string inputString = "";
     stringstream ss;
     bool failed = false;
     do {
-        cout << ss.str() << endl;
-        cout << val << endl;
         if (ss.fail()) {
             cout << "\tInput must be type " << datatype << endl;
             ss.clear();
-            ss.str("");
-        }
-        if (val < min || val > max) {
+        } else if (val < min || val > max) {
             cout << "\tInput must be in range " << min << " - " << max << endl;
+            ss.clear();
         }
+        ss.str("");
         cout << "\t> ";
         getline(*input, inputString);
         ss.str(inputString);
         ss >> val;
     } while (ss.fail() || val < min || val > max);
-    cout << val;
     return val;
 }
