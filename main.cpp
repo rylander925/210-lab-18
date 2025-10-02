@@ -34,12 +34,25 @@ template <typename T>
 T validateRange(istream* input, string datatype, T min, T max);
 
 int main() {
+    const string FILENAME = "";//"data.txt";
     ReviewNode* head = nullptr;
-    istream* input = &cin;
+    istream* input;
+    ifstream infile;
     bool pushFront = false;
     string continueFlag = "";
     double rating;
     string comment;
+
+    if(FILENAME != "") {
+        infile.open(FILENAME);
+        if (!infile.is_open()) {
+            cout << "ERROR: Could not open file " << FILENAME << endl;
+            throw ios_base::failure("Invalid file name");
+        }
+        input = &infile;
+    } else {
+        input = &cin;
+    }
 
     cout << "Which linked list method should we use?" << endl
          << "\t[1] New nodes are added at the head of the linked list" << endl
@@ -83,15 +96,16 @@ void push_back(ReviewNode* &head, double rating, string comment) {
 
 void outputReviews(ReviewNode* head) {
     ReviewNode *current = head;
-    int reviewNumber = 1; //keep track of # reviews while traversing
+    int reviewNumber = 0; //keep track of # reviews while traversing
     double sum = 0;       //sum reviews to calculate average
 
     cout << fixed << setprecision(2);
     cout << "Outputting all reviews:" << endl;
     while (current) {
+        reviewNumber++;
         cout << "\t> Review #" << reviewNumber << ": " << current->rating << ": " << current->comment << endl;
         sum += current->rating;
-        reviewNumber++;
+        current = current->next;
     }
     cout << "\t> Average: " << sum / reviewNumber << endl;
 }
@@ -106,18 +120,20 @@ T validateRange(istream* input, string datatype, T min, T max) {
     stringstream ss;
     bool failed = false;
     do {
+        cout << ss.str() << endl;
+        cout << val << endl;
         if (ss.fail()) {
             cout << "\tInput must be type " << datatype << endl;
             ss.clear();
             ss.str("");
         }
+        if (val < min || val > max) {
+            cout << "\tInput must be in range " << min << " - " << max << endl;
+        }
         cout << "\t> ";
         getline(*input, inputString);
         ss.str(inputString);
         ss >> val;
-        if (val < min || val > max) {
-            cout << "\tInput must be in range " << min << " - " << max << endl;
-        }
     } while (ss.fail() || val < min || val > max);
     cout << val;
     return val;
