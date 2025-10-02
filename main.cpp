@@ -8,6 +8,7 @@ IDE Used: Visual Studio Code
 #include <fstream>
 #include <string>
 #include <istream>
+#include <sstream>
 
  using namespace std;
 
@@ -47,13 +48,19 @@ int main() {
     pushFront = validateRange(input, "integer", 1, 2) == 1;
     do {
         cout << "Enter review rating 0-5: " << endl;
-        rating = validateRange(input, "double", 0, 5);
+        rating = validateRange(input, "double", 0.0, 5.0);
+        input->ignore(STREAM_IGNORE_CHARS, '\n');
         cout << "Enter review comments: " << endl;
-        input->ignore(STREAM_IGNORE_CHARS, 100);
         getline(*input, comment);
         cout << "Enter another review? Y/N: " << endl;
         getline(*input, continueFlag);
+        if (pushFront) {
+            push_front(head, rating, comment);
+        } else {
+            push_back(head, rating, comment);
+        }
     } while (continueFlag == "y" || continueFlag == "Y");
+    outputReviews(head);
 }
 
 void push_front(ReviewNode* head, double rating, string comment) {
@@ -96,17 +103,18 @@ void outputReviews(ReviewNode* head) {
 template <typename T>
 T validateRange(istream* input, string datatype, T min, T max) {
     T val;
+    bool failed = false;
     do {
-        if (input->fail()) {
-            cout << "\tInput must be type " << datatype << endl;
-            input->clear();
-            input->ignore(STREAM_IGNORE_CHARS, '\n');
-        }
         cout << "\t> ";
         *input >> val;
         cout << endl;
         if (val < min || val > max) {
             cout << "\tInput must be in range " << min << " - " << max << endl;
+        }
+        if (input->fail()) {
+            cout << "\tInput must be type " << datatype << endl;
+            input->clear();
+            input->ignore(STREAM_IGNORE_CHARS, '\n');
         }
     } while (input->fail() || val < min || val > max);
     return val;
