@@ -10,6 +10,8 @@ IDE Used: Visual Studio Code
 
  using namespace std;
 
+ const int STREAM_IGNORE_CHARS = 100;
+
  struct ReviewNode {
     string comment;
     double rating;
@@ -26,6 +28,9 @@ void push_back(ReviewNode* head, double rating, string comment);
 
 void outputReviews(ReviewNode* head);
 
+template <typename T>
+T validateRange(istream* input, string datatype, T min, T max);
+
 int main() {
     ReviewNode* head;
 
@@ -33,6 +38,7 @@ int main() {
          << "\t[1] New nodes are added at the head of the linked list" << endl
          << "\t[2] New nodes are added at the tail of the linked list" << endl
          << "\tChoice: > ";
+    
     
 }
 
@@ -57,14 +63,33 @@ void push_back(ReviewNode* head, double rating, string comment) {
 
 void outputReviews(ReviewNode* head) {
     ReviewNode *current = head;
-    int reviewNumber = 1;
-    double sum = 0;
+    int reviewNumber = 1; //keep track of # reviews while traversing
+    double sum = 0;       //sum reviews to calculate average
+
     cout << fixed << setprecision(2);
     cout << "Outputting all reviews:" << endl;
     while (current) {
         cout << "\t> Review #" << reviewNumber << ": " << current->rating << ": " << current->comment << endl;
-        sum +- current->rating;
+        sum += current->rating;
         reviewNumber++;
     }
     cout << "\t> Average: " << sum / reviewNumber << endl;
+}
+
+template <typename T>
+T validateRange(istream* input, string datatype, T min, T max) {
+    T val;
+    do {
+        cout << " > ";
+        input >> val;
+        if (input.fail()) {
+            cout << "Input must be type " << datatype << endl;
+            input.clear();
+            input.ignore(STREAM_IGNORE_CHARS, '\n');
+        }
+        if (val < min || val > max) {
+            cout << "Input must be in range " << min << " - " << max << endl;
+        }
+    } while (input.fail() || val < min || val > max);
+    return val;
 }
