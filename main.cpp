@@ -37,7 +37,7 @@ int main() {
     istream* input = &cin;
     bool pushFront = false;
     string continueFlag = "";
-    double rating = 0;
+    double rating;
     string comment;
 
     cout << "Which linked list method should we use?" << endl
@@ -47,9 +47,13 @@ int main() {
     pushFront = validateRange(input, "integer", 1, 2) == 1;
     do {
         cout << "Enter review rating 0-5: " << endl;
+        rating = validateRange(input, "double", 0, 5);
+        cout << "Enter review comments: " << endl;
+        input->ignore(STREAM_IGNORE_CHARS, 100);
+        getline(*input, comment);
+        cout << "Enter another review? Y/N: " << endl;
+        getline(*input, continueFlag);
     } while (continueFlag == "y" || continueFlag == "Y");
-
-    
 }
 
 void push_front(ReviewNode* head, double rating, string comment) {
@@ -93,17 +97,17 @@ template <typename T>
 T validateRange(istream* input, string datatype, T min, T max) {
     T val;
     do {
-        cout << "\t> ";
-        input >> val;
-        cout << endl;
-        if (input.fail()) {
+        if (input->fail()) {
             cout << "\tInput must be type " << datatype << endl;
-            input.clear();
-            input.ignore(STREAM_IGNORE_CHARS, '\n');
+            input->clear();
+            input->ignore(STREAM_IGNORE_CHARS, '\n');
         }
+        cout << "\t> ";
+        *input >> val;
+        cout << endl;
         if (val < min || val > max) {
             cout << "\tInput must be in range " << min << " - " << max << endl;
         }
-    } while (input.fail() || val < min || val > max);
+    } while (input->fail() || val < min || val > max);
     return val;
 }
