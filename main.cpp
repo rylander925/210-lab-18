@@ -7,6 +7,7 @@ IDE Used: Visual Studio Code
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <istream>
 
  using namespace std;
 
@@ -32,13 +33,22 @@ template <typename T>
 T validateRange(istream* input, string datatype, T min, T max);
 
 int main() {
-    ReviewNode* head;
+    ReviewNode* head = nullptr;
+    istream* input = &cin;
+    bool pushFront = false;
+    string continueFlag = "";
+    double rating = 0;
+    string comment;
 
     cout << "Which linked list method should we use?" << endl
          << "\t[1] New nodes are added at the head of the linked list" << endl
          << "\t[2] New nodes are added at the tail of the linked list" << endl
-         << "\tChoice: > ";
-    
+         << "\tChoice:" << endl;
+    pushFront = validateRange(input, "integer", 1, 2) == 1;
+    do {
+        cout << "Enter review rating 0-5: " << endl;
+    } while (continueFlag == "y" || continueFlag == "Y");
+
     
 }
 
@@ -76,19 +86,23 @@ void outputReviews(ReviewNode* head) {
     cout << "\t> Average: " << sum / reviewNumber << endl;
 }
 
+/**
+ * Validates input from range min to max inclusive
+ */
 template <typename T>
 T validateRange(istream* input, string datatype, T min, T max) {
     T val;
     do {
-        cout << " > ";
+        cout << "\t> ";
         input >> val;
+        cout << endl;
         if (input.fail()) {
-            cout << "Input must be type " << datatype << endl;
+            cout << "\tInput must be type " << datatype << endl;
             input.clear();
             input.ignore(STREAM_IGNORE_CHARS, '\n');
         }
         if (val < min || val > max) {
-            cout << "Input must be in range " << min << " - " << max << endl;
+            cout << "\tInput must be in range " << min << " - " << max << endl;
         }
     } while (input.fail() || val < min || val > max);
     return val;
