@@ -36,16 +36,21 @@ T validateRange(istream* input, string datatype, T min, T max);
 
 int main() {
     const string FILENAME = "";
-    ReviewNode* head = nullptr;
     istream* input;
     ifstream infile;
-    bool pushFront = false;
-    string continueFlag = "";
-    double rating;
+
+    bool pushFront = false;     //Flag to determine whether to append or prepend list elements
+    string continueFlag = "";   //Whether or not user wants to quit
+
+    ReviewNode* head = nullptr; 
+
+    double rating;              //temp variables when taking input
     string comment;
 
+    //Choose between file or console input
     if(FILENAME != "") {
         infile.open(FILENAME);
+        //validate file open
         if (!infile.is_open()) {
             cout << "ERROR: Could not open file " << FILENAME << endl;
             throw ios_base::failure("Invalid file name");
@@ -55,24 +60,31 @@ int main() {
         input = &cin;
     }
 
+    //Determine prepend or append
     cout << "Which linked list method should we use?" << endl
          << "\t[1] New nodes are added at the head of the linked list" << endl
          << "\t[2] New nodes are added at the tail of the linked list" << endl
          << "\tChoice:" << endl;
     pushFront = validateRange(input, "integer", 1, 2) == 1;
+
+    //Take reviews from input while user continues
     do {
         cout << "Enter review rating 0-5: " << endl;
         rating = validateRange(input, "double", 0.0, 5.0);
+
         cout << "Enter review comments: " << endl;
         getline(*input, comment);
+
         cout << "Enter another review? Y/N: " << endl;
         getline(*input, continueFlag);
+        
         if (pushFront) {
             push_front(head, rating, comment);
         } else {
             push_back(head, rating, comment);
         }
     } while (continueFlag == "y" || continueFlag == "Y");
+
     outputReviews(head);
 }
 
