@@ -19,6 +19,7 @@ IDE Used: Visual Studio Code
     double rating;
     ReviewNode* next;
 
+    //constructors; by default next is initialized with nullptr
     ReviewNode() { comment = "No comment"; rating = -1; next = nullptr; }
     ReviewNode(string c, double r): comment(c), rating(r), next(nullptr) { }
     ReviewNode(string c, double r, ReviewNode* next): comment(c), rating(r), next(next) { }
@@ -34,7 +35,7 @@ template <typename T>
 T validateRange(istream* input, string datatype, T min, T max);
 
 int main() {
-    const string FILENAME = "data.txt";
+    const string FILENAME = "";
     ReviewNode* head = nullptr;
     istream* input;
     ifstream infile;
@@ -75,14 +76,26 @@ int main() {
     outputReviews(head);
 }
 
+/**
+ * Prepends a new review node to the front of a linked list
+ * @param head Head of the linked list to prepend to
+ * @param rating Rating of the new node
+ * @param comment Comment of the new node
+ */
 void push_front(ReviewNode* &head, double rating, string comment) {
     ReviewNode* newNode = new ReviewNode(comment, rating); //initialized w/ nullptr by default
     if (head) {
-        newNode->next = head;
+        newNode->next = head; //if list is not empty, only need to update next pointer
     }
-    head = newNode;
+    head = newNode; //otherwise works if list is empty
 }
 
+/**
+ * Appends a new review node to the end of a linked list
+ * @param head Head of the linked list to append to
+ * @param rating Rating of the new node
+ * @param comment Comment of the new node
+ */
 void push_back(ReviewNode* &head, double rating, string comment) {
     ReviewNode* current = head;
     ReviewNode* newNode = new ReviewNode(comment, rating); //initialized w/ nullptr by default
@@ -94,6 +107,10 @@ void push_back(ReviewNode* &head, double rating, string comment) {
     }
 }
 
+/**
+ * Outputs reveiws in a linked list followed by the average review
+ * @param head Head of the linked list of reviews
+ */
 void outputReviews(ReviewNode* head) {
     ReviewNode *current = head;
     int reviewNumber = 0; //keep track of # reviews while traversing
@@ -101,6 +118,8 @@ void outputReviews(ReviewNode* head) {
 
     cout << fixed << setprecision(2);
     cout << "Outputting all reviews:" << endl;
+
+     //traverse list
     while (current) {
         reviewNumber++;
         cout << "\t> Review #" << reviewNumber << ": " << current->rating << ": " << current->comment << endl;
@@ -112,22 +131,29 @@ void outputReviews(ReviewNode* head) {
 
 /**
  * Validates input from range min to max inclusive
+ * @param input Data is taken from input and validated
+ * @param datatype Name of datatype when displaying error message
+ * @param min Minimum value to accept
+ * @param max Maximum value to accept
+ * @return Validated piece of data
  */
 template <typename T>
 T validateRange(istream* input, string datatype, T min, T max) {
-    T val = min;
+    T val = min;                //Initialize with min to prevent error message on first loop iteration
     string inputString = "";
-    stringstream ss;
-    bool failed = false;
+    stringstream ss;            //Uses stringstream to prevent fall through of values remaining in the given input stream
     do {
+        //Check for valid messages at beginning to clear ss of errors right before data input
+        //Allows while loop to check for a failed stream without another flag
         if (ss.fail()) {
             cout << "\tInput must be type " << datatype << endl;
             ss.clear();
-        } else if (val < min || val > max) {
+        } else if (val < min || val > max) { //range of min - max is inclusive
             cout << "\tInput must be in range " << min << " - " << max << endl;
             ss.clear();
         }
-        ss.str("");
+        ss.str(""); //reset stringstream
+
         cout << "\t> ";
         getline(*input, inputString);
         ss.str(inputString);
